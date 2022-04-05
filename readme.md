@@ -4,3 +4,5 @@
 
 `npm run build`
 - Use to build production code for your block inside `dist` folder.
+
+This project was bootstrapped with [Create Guten Block](https://github.com/ahmadawais/create-guten-block).
