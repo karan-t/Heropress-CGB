@@ -89,29 +89,19 @@ registerBlockType( 'cgb/block-heropress-widget', {
 
 		if (props.attributes.heropressData == undefined) {
 			let fetchFeed = (async () => {
-				let feedData = await fetch("https://heropress.com/essays/feed/")
-				.then(response => response.text())
-				.then(text => {
-					let parser = new DOMParser();
-					let xmlDoc = parser.parseFromString(text, "text/xml");
-					let json = xmlDoc.getElementsByTagName("item");
-					let jsonArray = Array.from(json);
-					let jsonObject = jsonArray.map(item => {
-						let jsonObj = {};
-						jsonObj.title = item.getElementsByTagName("title")[0].innerHTML;
-						jsonObj.link = item.getElementsByTagName("link")[0].innerHTML;
-						jsonObj.enclosure = item.getElementsByTagName("enclosure")[0].getAttribute("url");
-						jsonObj.pubDate = item.getElementsByTagName("pubDate")[0].innerHTML;
-						jsonObj.author = item.getElementsByTagName("dc:creator")[0].innerHTML;
-						jsonObj.description = item.getElementsByTagName("description")[0].innerHTML;
-						jsonObj.content = item.getElementsByTagName("content:encoded")[0].innerHTML;
-						return jsonObj;
-					});
-					console.log(jsonObject);
-					return jsonObject;
+				let feedData = await fetch("https://performedia-cors-proxy.herokuapp.com/https://heropress.com/essays/feed")
+				let text = await feedData.text();
+				let parser = new DOMParser();
+				let jsonArray = Array.from(parser.parseFromString(text, "text/xml").getElementsByTagName("item"));
+				return jsonArray.map(item => {
+					let jsonObj = {};
+					jsonObj.title = item.getElementsByTagName("title")[0].innerHTML;
+					jsonObj.link = item.getElementsByTagName("link")[0].innerHTML;
+					jsonObj.enclosure = item.getElementsByTagName("enclosure")[0].getAttribute("url");
+					jsonObj.pubDate = item.getElementsByTagName("pubDate")[0].innerHTML;
+					jsonObj.author = item.getElementsByTagName("dc:creator")[0].innerHTML;
+					return jsonObj;
 				});
-					console.log(feedData);
-					return feedData;
 			})();
 			fetchFeed.then(jsonObject => {
 				props.setAttributes({
