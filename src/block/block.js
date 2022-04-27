@@ -15,6 +15,7 @@ const {
     InspectorControls,
 } = wp.blockEditor;
 import { useBlockProps, BlockAlignmentToolbar } from '@wordpress/block-editor';
+import apiFetch from '@wordpress/api-fetch';
 const { PanelBody, TextControl, SelectControl, ToggleControl, RangeControl } = wp.components;
 const { Fragment } = wp.element;
 
@@ -89,23 +90,12 @@ registerBlockType( 'cgb/block-heropress-widget', {
 
 		if (props.attributes.heropressData == undefined) {
 			let fetchFeed = (async () => {
-				let feedData = await fetch("https://performedia-cors-proxy.herokuapp.com/https://heropress.com/essays/feed")
-				let text = await feedData.text();
-				let parser = new DOMParser();
-				let jsonArray = Array.from(parser.parseFromString(text, "text/xml").getElementsByTagName("item"));
-				return jsonArray.map(item => {
-					let jsonObj = {};
-					jsonObj.title = item.getElementsByTagName("title")[0].innerHTML;
-					jsonObj.link = item.getElementsByTagName("link")[0].innerHTML;
-					jsonObj.enclosure = item.getElementsByTagName("enclosure")[0].getAttribute("url");
-					jsonObj.pubDate = item.getElementsByTagName("pubDate")[0].innerHTML;
-					jsonObj.author = item.getElementsByTagName("dc:creator")[0].innerHTML;
-					return jsonObj;
-				});
+				let feedData = await fetch(admin_ajax.ajax_url + '?action=heropress_get_feed');
+				return feedData.json();
 			})();
-			fetchFeed.then(jsonObject => {
+			fetchFeed.then(feedDataJson => {
 				props.setAttributes({
-					heropressData: jsonObject
+					heropressData: feedDataJson
 				});
 			})
 		}

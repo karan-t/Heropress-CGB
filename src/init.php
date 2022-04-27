@@ -64,6 +64,11 @@ function heropress_widget_cgb_block_assets() { // phpcs:ignore
 		]
 	);
 
+	//localize ajax url
+	wp_localize_script( 'heropress_widget-cgb-block-js', 'admin_ajax', array(
+		'ajax_url' => admin_url( 'admin-ajax.php' ),
+	));
+
 	/**
 	 * Register Gutenberg block on server-side.
 	 *
